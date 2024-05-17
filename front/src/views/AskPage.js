@@ -7,6 +7,7 @@ import BlueButton from '../components/BlueButton';
 import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
 import {useState} from 'react';
+import { NewComment } from '../Api/commentApi';
 
 
 // Assurez-vous que Header1 est défini ou utilisé correctement dans votre composant AskPage
@@ -48,18 +49,32 @@ margin-bottom:20px;
 const AskPage = () => {
   const [questionTitle, setQuestionTitle]= useState('');
   const [questionBody, setQuestionBody]= useState('');
+
+  console.log(questionTitle);
+  const handelAddPost = async()=>{
+
+    await NewComment({title:questionTitle , contenu:questionBody})
+    .then((result)=>{
+      console.log(result);
+    })
+    .catch((err)=>{
+      console.log(err);
+    })
+  }
+ 
+
   return (
     <QuestionInput>
       <h1 style={{marginBottom:'20px'}}>Ask a public question</h1>
-      <QuestionTitleInput type="text" value={questionTitle} onchange={e => setQuestionTitle(e.target.value)} placeholder="Title of your question"/>
+      <QuestionTitleInput type="text"  onChange={e => setQuestionTitle(e.target.value)} placeholder="Title of your question"/>
       <QuestionBodyTextarea 
       onChange={e => setQuestionBody(e.target.value)}
       placeholder="More info about your question. You can use markdom here">{questionBody}</QuestionBodyTextarea>
      
-      <PreviewArea>
+      {/* <PreviewArea>
       <ReactMarkdown remarkPlugins={[gfm]} children={questionBody} />
-      </PreviewArea>
-      <BlueButton>Post question</BlueButton>
+      </PreviewArea> */}
+      <BlueButton onClick={()=>handelAddPost()}>Post question</BlueButton>
     </QuestionInput>
   );
 }

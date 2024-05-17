@@ -1,7 +1,7 @@
 
 const express = require('express');
 const { register , login } = require('../handlers/user');
-const { NewComment, getAll, addAnswer, singleComment, getAllAnswer } = require('../handlers/blog');
+const { NewComment, getAll, addAnswer, singleComment, getAllAnswer, removeComment } = require('../handlers/blog');
 const isAuth = require('../middelwares/isAuth')
 
 const userRoute = express.Router();
@@ -15,9 +15,10 @@ userRoute.post('/signIn' , login)
 
 userRoute.post('/create', isAuth, NewComment)
 userRoute.get('/comments' , getAll)
-userRoute.post('/addAnswer/:id' , isAuth , addAnswer)
+userRoute.post('/addAnswer' , isAuth , addAnswer)
 userRoute.get('/singleCom/:id', singleComment)
-userRoute.get('/answers', getAllAnswer)
+userRoute.get('/answers', getAllAnswer);
+userRoute.delete('/remove/:id',removeComment)
 
 
 

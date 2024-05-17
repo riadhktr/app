@@ -16,12 +16,12 @@ const NewComment = async(req,res)=>{
 
         const comment = new Comment({title,contenu , postedBy: _id});
 
-        comment.save();
+        await comment.save();
 
         res.status(200).json({msg:"comment inserted" , comment})
     }catch(err){
-
-        res.status(500).json({msg:"server error while creating a new comment"})
+        console.log(err);
+        res.status(500).json({msg:"server error while creating a new comment",err})
     }
 }
 
@@ -32,7 +32,10 @@ const getAll = async(req, res)=>{
     
     try{
        const comments= await comment.find({})
-        res.status(200).json({msg:"get all the comments", comments})
+       .populate('answers.answer')
+    //    .populate({ path: 'answers', select: '' })
+       .populate('postedBy')
+       res.status(200).json({msg:"get all the comments", comments})
     }catch(err){
         res.stauts(500).json({msg:"server error"})
     }
@@ -45,9 +48,8 @@ const addAnswer = async(req,res)=>{
 
 try {
     let {_id} = req.user ;
-    let {id} = req.params ;
-    console.log(id);
-    let {contenu} = req.body ;
+     let {contenu ,id} = req.body ;
+     console.log(id);
 
    let newAnswer =  await new Answer({contenu , answerdBy : _id})
    let answerID = newAnswer._id ;
@@ -55,13 +57,14 @@ try {
 
   console.log(newAnswer);
    let comment = await Comment.findByIdAndUpdate({_id:id}, {
-    answers:{
-        $push :{
-            answer: answerID
+   
+    $push: {
+        answers: {
+          answer : answerID
         }
-    }
-
-},{new:true});
+      }
+       
+    },{new:true});
 console.log(comment);
 newAnswer.save();
 res.status(200).json({msg:"answer created with sucess", comment})
@@ -78,8 +81,8 @@ res.status(200).json({msg:"answer created with sucess", comment})
 const singleComment = async(req,res)=>{
     const {id} = req.params ;
 console.log(id);
-   let data =  await Comment.findById({_id : id})
-   data.populate('answers._id')
+ await Comment.findById({_id : id}).populate({ path: 'answers.answer' })
+//    data.answers.populate('answer')
 //    console.log(data)
     .then((doc)=>{
         res.status(200).json(doc)
@@ -100,4 +103,17 @@ const getAllAnswer = async(req,res)=>{
         res.status(500).json(err)
     })
 }
-module.exports = {NewComment, getAll,addAnswer,singleComment,getAllAnswer}
+
+
+ const removeComment = async(req,res)=>{
+
+    let {id} = req.params ;
+    await Comment.deleteOne({_id : id})
+    .then((doc)=>{
+        res.status(200).json({msg:"doc removed with sucess"})
+    })
+    .catch((err)=>{
+        res.status(500).json({msg:"can not remove the document"})
+    })
+ }
+module.exports = {NewComment, getAll,addAnswer,singleComment,getAllAnswer,removeComment}

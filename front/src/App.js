@@ -13,6 +13,7 @@ import {  Routes, Route } from 'react-router-dom';
 import { userContext } from "./UserContext";
 import QuestionPage from './components/QuestionPage';
 import QuestionsRowPage from './components/QuestionsRow';
+import PostList from "./components/postList";
 // import Post from './components/Post';
 // import ProfilPage from './components/ProfilPage';
 
@@ -38,12 +39,13 @@ function App() {
       <userContext.Provider value={user}>
         <Header/>
         <Routes>
-          <Route path="/" element={<QuestionsPage />} />
+          {/* <Route path="/" element={<QuestionsPage />} /> */}
+          <Route path="/" element={<PostList/>}/>
           <Route path="/Login" element={<LoginPage />} />
           {/* <Route path="/profil" element={<ProfilPage />} /> */}
           <Route path="/Register" element={<RegisterPage/>} />
           <Route path="/questions/:id" element={<QuestionPage/>}/>
-          <Route path="/ask" element={<AskPage />} />
+          {/* <Route path="/ask" element={<AskPage />} /> */}
           
       
         </Routes>

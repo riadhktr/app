@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import {Link} from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
 import styled from "styled-components";
 import Header1 from "../Header1";
-import axios from 'axios';
+
 import { login } from "../Api/authApi";
+import { isAuthenticated, setAuthentification } from "../helpers/auth";
 
 const QuestionInput = styled.div`
   padding: 30px 20px;
@@ -50,12 +51,17 @@ const LoginPage = () => {
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate()
 
   const handleSubmit = async(e) => {
     e.preventDefault(); 
   await login({email,password})
     .then(response => {
       console.log(response); 
+      setAuthentification(response.data.token , response.data.exist);
+      if(isAuthenticated()){
+        navigate('/')
+      }
     })
     .catch(error => {
       console.error('Error:', error); 
